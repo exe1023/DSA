@@ -60,8 +60,8 @@ Example dealwithexpress(const char *ptr , int &totaltrue , int &totalfalse , int
 	{
 		int position = atoi(express);
 		express = strtok(NULL , " :");
-		example.feature[position - 1] = atof(express);
-		existfeature[position - 1] = 1;
+		example.feature[position] = atof(express);
+		existfeature[position] = 1;
 		express = strtok(NULL , " :");
 	}
 	free(expression);
@@ -76,6 +76,13 @@ double totalconfusion(int c , int e , int d , int f)
 {
 	return ( (double)(c + d )/(c + d + e + f )*confusion(c , d) + (double)(e + f)/(c + d + e + f)*confusion(e , f)   );
 }
+bool equaldouble(double a , double b)
+{
+	if(fabs(a - b) < 0.0000001)
+		return true;
+	else
+		return false;
+}
 void findthreshold(int feapos , int totaltrue , int totalfalse ,Best &best , int existfeature[] , vector<int> cases)
 {
 	int casesize = cases.size();
@@ -86,7 +93,7 @@ void findthreshold(int feapos , int totaltrue , int totalfalse ,Best &best , int
 	rightdecision.first = totaltrue ; rightdecision.second = totalfalse;
 	for(int i = 0 ; i < casesize ; i++)
 	{
-		if(i >= 1 && examples[ cases[i - 1] ].feature[feapos] != examples[ cases[i] ].feature[feapos] )
+		if(i >= 1 && !equaldouble(examples[ cases[i - 1] ].feature[feapos] ,examples[ cases[i] ].feature[feapos]))
 		{
 			//cout << (examples[ cases[i - 1] ].feature[feapos] + examples[ cases[i] ].feature[feapos] ) /2 << endl ;
 			if(totalconfusion(leftdecision.first , rightdecision.first ,leftdecision.second , rightdecision.second) < best.totconf || best.totconf == -1)
@@ -149,7 +156,7 @@ void buildtree( vector<int> &cases ,int totaltrue , int totalfalse , int existfe
 			newcase2.push_back(cases[i]);
 	}
 	printtab(tabs);
-	printf("if(attr[%d] > %lf){\n" ,best.feapos + 1, best.threshold);
+	printf("if(attr[%d] > %f){\n" ,best.feapos , best.threshold);
 	buildtree(newcase1 , best.rightdecision.first , best.rightdecision.second , existfeature , tabs+1);
 	printtab(tabs);
 	printf("}\n");
