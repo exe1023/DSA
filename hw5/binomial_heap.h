@@ -1,6 +1,7 @@
 #include <utility>
 #include <list>
 #include <exception>
+#include <iostream>
 using namespace std;
 struct EmptyHeap: public exception{};
 
@@ -96,8 +97,8 @@ class BinomialHeap {
         	BH newbheap;
             typename list<BT*>::iterator it = a->children.begin();
 			for(it ; it != a->children.end() ; it++)
-				newbheap.trees[ it->position() ] = *it;
-			delete[] a;
+				newbheap.trees[ (*it)->position() ] = *it;
+			delete a;
 			MaxRemainder result(max , newbheap);
 			return result;
         }
@@ -113,7 +114,20 @@ class BinomialHeap {
             for(int i=0; i<32; ++i) trees[i] = nullptr;
             trees[0] = new BT(element);
         }
+        void reset()
+        {
+            for(int i = 0  ; i < 32 ; i++) trees[i] = nullptr;
+            size = 0;
+        }
         int heapsize(){return size;}
+        T max()
+        {
+            int maxtree = -1;
+            for(int i = 0 ; i < 32 ; i++)
+                if(trees[i]->size() > 0 && (maxtree == -1 || trees[i]->element > trees[maxtree]->element))
+                    maxtree = i;
+            return trees[maxtree]->element;
+        }
         /* merge all elements in the binomial heap b into *this, and clear the binomial heap b.
          *
          * INPUT:   b: a pointer of BinomialHeap
@@ -126,12 +140,11 @@ class BinomialHeap {
         		trees[i] = carrysum.second;
         		carry = carrysum.first;
         	}
+            size += b.size;
         }
-
         void insert(const T &element) {
             BH tmp = BH(element);
             merge(tmp);
-            size ++;
         }
         T pop() {
             if(size==0) throw EmptyHeap();
@@ -141,7 +154,6 @@ class BinomialHeap {
                 for(int i=0; i<32; ++i)
                     if(trees[i]->size() > 0 && (max_tree == -1 || trees[i]->element > trees[max_tree]->element))
                         max_tree = i;
-
                 MaxRemainder m_r = pop_max(trees[max_tree]);
                 T &max_element = m_r.first;
                 BH &remainder = m_r.second;
