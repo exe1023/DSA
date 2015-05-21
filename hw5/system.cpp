@@ -73,7 +73,7 @@ int main(void)
 {
 	int c , w;
 	cin >> c >> w;
-	BinomialHeap<Task> computers[c];
+	BinomialHeap<Task> *computers = new BinomialHeap<Task>[c];
 	char command[10];
 	while(scanf("%s" , command) != EOF)
 	{
