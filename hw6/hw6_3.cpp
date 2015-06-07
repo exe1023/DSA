@@ -36,6 +36,7 @@ void checkmerge(int parent[] ,int depth[] ,struct avl_table *avltree[], int owne
 	{
 		mergetree(avltree[owner2]->avl_root , avltree[owner1]);
 		parent[owner2] = owner1;
+		actualowner[owner2] = actualowner[owner1];
 		if(depth[owner1] == depth[owner2])
 			depth[owner1] ++;
 	}
@@ -62,13 +63,11 @@ void maxgame(long long int s , struct avl_node *node , long long int &gamecnt)
 	{
 		gamecnt += node->avl_cnode[0];
 		s -= node->avl_sum[0];
-		long long int number = s / (long long int)node->avl_data;
-		if(number > node->avl_cnt)
-			number = node->avl_cnt;
-		gamecnt += number;
-		s -= (node->avl_data * number);
-		if(number == node->avl_cnt)
+		long long int number = node->avl_cnt * (long long int)node->avl_data;
+		if(s >= number)
 		{
+			gamecnt += node->avl_cnt;
+			s -= number;
 			if(node->avl_sum[1] <= s)
 			{
 				gamecnt += node->avl_cnode[1];
@@ -78,6 +77,11 @@ void maxgame(long long int s , struct avl_node *node , long long int &gamecnt)
 			{
 				maxgame(s , node->avl_link[1] , gamecnt);
 			}
+		}
+		else
+		{
+			gamecnt += s / node->avl_data;
+			return;
 		}
 	}
 	else

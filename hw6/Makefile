@@ -11,7 +11,7 @@ OBJS = $(OBJ1) $(OBJ2)
 
 RM = rm -rf
 
--include Makefile.inc;
+-include Makefile.inc
 
 .PHONY: all pre cleanall clean run1 run2
 
